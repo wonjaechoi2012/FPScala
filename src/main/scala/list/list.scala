@@ -56,7 +56,7 @@ object List{
   }
 
   //다음 인수 추론 가능하게 변경
-  def dropWhile[A](l: List[A])(f: A=>Boolean): List[A] = l match {
+  def dropWhile2[A](l: List[A])(f: A=>Boolean): List[A] = l match {
     case Cons(h,t) if f(h) => dropWhile(t,f)
     case _ => l
   }
@@ -74,7 +74,7 @@ object List{
     case Cons(h,t) => Cons(h,init(t))
   }
 
-  //sum과 product의 차이는 Nil일 때의 반환 값과 결과를 결한하는데 쓰이는 연산.
+  //sum과 product의 차이는 Nil일 때의 반환 값과 결과를 결합하는데 쓰이는 연산.
   //을 제외한 부분은 코드 중복!
   //이것을 일반화
 
@@ -90,6 +90,46 @@ object List{
   def product2(ns: List[Double]): Double =
     foldRight(ns,0.0)(_*_)
 
+  //foldRight는 꼬리재귀가 아니기때문에 스택오버플로우발생할 수 있음.
+
+  //exercise 3.8
+  //원래 리스트가 나옴.
+  //foldRight(List(1,2,3),Nil:List[Int])(Cons(_,_))
+
+  //exercise 3.9
+  def length[A](as: List[A]): Int =
+    foldRight(as,0)((_,acc)=>acc+1)
+
+  //exercise 3.10
+  //꼬리재귀로 만들어서 스택오버플로우에 안전한 foldLeft작성
+  def foldLeft[A,B](as: List[A], z: B)(f: (B,A)=>B):B =
+    as match {
+      case Nil => z
+      case Cons(h,t) => foldLeft(t,f(z,h))(f)
+    }
+  //퍼즐 맞추기처럼 반환타입에 맞게 끼워넣으면 구현 완성.
+
+  //exercise 3.11
+  def sum3(ns: List[Int]): Int =
+    foldLeft(ns,0)(_+_)
+
+  def product3(ns: List[Double]): Double =
+    foldLeft(ns,0.0)(_*_)
+
+  //exercise 3.12
+  def reverse[A](ns: List[A]): List[A] =
+    foldLeft(ns,Nil:List[A]){(acc,a)=>Cons(a,acc)}
+
+  //exercise 3.13
+
+
+  //exercise 3.14
+  def append2[A](a1: List[A],a2: List[A]): List[A] =
+    foldRight(a1,a2)(Cons(_,_))
+
+  //exercise 3.15
+  def flatten[A](ns: List[List[A]]): List[A] =
+    foldRight(ns,Nil:List[A])(append(_,_))
 
 }
 

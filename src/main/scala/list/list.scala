@@ -131,5 +131,41 @@ object List{
   def flatten[A](ns: List[List[A]]): List[A] =
     foldRight(ns,Nil:List[A])(append(_,_))
 
+  //exercise 3.16
+  def plusOne(ns: List[Int]): List[Int] =
+    foldRight(ns,Nil:List[Int])((h,acc)=>Cons(h+1,acc))
+
+  //exercise 3.17
+  def DoubleToString(ns: List[Double]):List[String] =
+    foldRight(ns,Nil:List[String])((h,acc)=>Cons(h.toString,acc))
+
+  //exercise 3.18
+  def map[A,B](ns: List[A])(f: A=>B): List[B] =
+    foldRight(ns,Nil:List[B])((h,acc)=>Cons(f(h),acc))
+
+  //exercise 3.19
+  def filter[A](as: List[A])(f: A=>Boolean): List[A] =
+    foldRight(as, Nil:List[A])((h,acc) => if(f(h)) Cons(h,acc) else acc)
+
+  //exercise 3.20
+  def flatMap[A,B](as: List[A])(f: A=>List[B]): List[B]=
+    flatten(map(as)(f))
+
+  def flatMap[A,B](as: List[A])(f: A=>List[B]): List[B]= as match {
+    case Nil => Nil
+    case Cons(h,t) => append(f(h),flatMap(t)(f))
+  }
+
+  //pure : 값을 박스 안의 값으로 만들어주는 최소한의 오퍼레이션
+  def pure[A](a:A):List[A] = List(a)
+
+  def filterViaFlatMap[A](as: List[A])(f: A=>Boolean):List[A] =
+    flatMap(as)(a => if(f(a)) pure(a) else Nil)
+  //flatMap(as)(a => if(f(a)) List(a) else Nil)
+
+  def MapViaFlatMap[A,B](as: List[A])(f: A=>B): List[B] =
+    flatMap(as)(a => pure(f(a)))
+  //pure와 flatMap만 있으면 공짜로 여러 오퍼레이션을 얻을 수 있음
+
 }
 

@@ -1,5 +1,7 @@
 package option
 
+import scala.util.Try
+
 sealed trait Option[+A]{
   //exercise 4.1
   def map[B](f: A=>B): Option[B] = this match {
@@ -83,7 +85,26 @@ sealed trait Option[+A]{
       c<-fc
     }yield f(a,b,c)
 
+  def Try[A](a: =>A):Option[A] =
+    try Some(a)
+    catch {case _ : Exception => None}
+  //a 평가 도중 오류가 발생할 수 있기때문에 a를 call by name으로 받음.
+  //예외 정보는 버려짐. (Either를 사용하면 저장 가능)
+
+  //하나라도 None이 있으면 None, 전부가 Some일 경우, List of Option으로 변경.
+  def sequence[A](a: List[Option[A]]):Option[List[A]] = ???
+
+  def parseInts(a: List[String]): Option[List[Int]] =
+    sequence(a.map(i=>Try(i.toInt)))
+  //실패할 수 있는 함수를 리스트의 원소에 적용하였을 때, 하나라도 실패하면 None이 되게해야할때 sequence 사용가능.
+  //map으로 전체 리스트를 한번 훑고, sequence로 다시 훑기때문에 반복이 2번!
+  
+  //traverse를 만들어서 리스트를 한번만 훑게 변경.
+  def traverse[A,B](a: List[A])(f: A=> Option[B]): Option[List[B]] = ???
 }
+
+
+
 case class Some[+A](get: A) extends Option[A]
 case object None extends Option[Nothing]
 

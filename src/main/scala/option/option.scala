@@ -56,6 +56,33 @@ sealed trait Option[+A]{
   def filter1(f: A=>Boolean): Option[A] =
     flatMap(a=>if(f(a)) this else None)
 
+  def lift[A,B](f:A=>B): Option[A] => Option[B] = a=>a.map(f)
+
+  def lift2[A,B](f:A=>B): Option[A] => Option[B] = _ map f
+  //일반 함수들을 옵션에 대해 작용하는 함수로 승급시킬 수 있음.
+  //옵션을 다룰 때 기존 함수들을 옵션에 대해 작동하도록 새로 작성하지않고,
+  //그대로 사용 가능하게 해줌.
+
+  //exercise 4.3
+  def map2[A,B,C](fa: Option[A], fb: Option[B])(f: (A,B) => C): Option[C] =
+    fa.flatMap(fa=>fb.map(fb=>f(fa,fb)))
+  //option a를 Option[A]=>Option[B]=>Option[C]로 만듬.
+
+  def map2_2[A,B,C](fa: Option[A], fb: Option[B])(f: (A,B) => C): Option[C] =
+    for {
+     a<-fa
+     b<-fb
+    }yield (f(a,b))
+  //인수가 두개인 어떤 함수라도 옵션에 대응 시킬 수 있음.
+
+  //승급 함수들을 편하게 만들기 위해 for-comprehention 사용
+  def map3[A,B,C,D](fa: Option[A], fb: Option[B], fc: Option[C])(f: (A,B,C)=>D): Option[D] =
+    for {
+      a<-fa
+      b<-fb
+      c<-fc
+    }yield f(a,b,c)
+
 }
 case class Some[+A](get: A) extends Option[A]
 case object None extends Option[Nothing]

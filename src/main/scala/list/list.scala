@@ -151,7 +151,7 @@ object List{
   def flatMap[A,B](as: List[A])(f: A=>List[B]): List[B]=
     flatten(map(as)(f))
 
-  def flatMap[A,B](as: List[A])(f: A=>List[B]): List[B]= as match {
+  def flatMap2[A,B](as: List[A])(f: A=>List[B]): List[B]= as match {
     case Nil => Nil
     case Cons(h,t) => append(f(h),flatMap(t)(f))
   }
@@ -167,5 +167,23 @@ object List{
     flatMap(as)(a => pure(f(a)))
   //pure와 flatMap만 있으면 공짜로 여러 오퍼레이션을 얻을 수 있음
 
+  //exercise 3.22
+  def addList(a1: List[Int], a2: List[Int]): List[Int] =
+    (a1, a2) match {
+      case (Cons(h1,t1),Cons(h2,t2)) => Cons(h1+h2,addList(t1,t2))
+      case _ => Nil
+    }
+
+  //exercise 3.23
+  def zipWith[A,B,C](a1: List[A], a2: List[B])(f: (A,B)=>C):List[C] =
+    (a1,a2) match {
+      case (Cons(h1,t1),Cons(h2,t2)) => Cons(f(h1,h2),zipWith(t1,t2)(f))
+      case _ => Nil
+    }
+
+  //scanLeft, scanRight, take, takeWhile, exist
+  //traverse, sequence
 }
+
+
 

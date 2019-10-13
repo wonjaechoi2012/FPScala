@@ -126,8 +126,16 @@ object Option{
   //Option[tail의 리스트] => Option[h::tail의 리스트]로 매핑.
   //None을 만나면 flatMap에서 연산이 종료되면서 None반환하고 종료
 
+  def sequence_1[A](a: List[Option[A]]):Option[List[A]] = a match {
+    case Nil => Some(Nil)
+    case h::t => map2(h,sequence(t))(_::_)
+  }
+  //h(Option[A])와 t(Option[List[A]]) 2개의 옵션을 받고, Option[A]안의 a와 Option[List[A]]의 List[A]를 ::로 연결.
+
+
   def sequence_2[A](a: List[Option[A]]): Option[List[A]] =
     a.foldRight[Option[List[A]]](Some(Nil))((x,y)=>map2(x,y)((x,y)=>(x::y)))
+  //패턴매칭을 foldRight로 변경
 
 
   def parseInts(a: List[String]): Option[List[Int]] =
@@ -136,7 +144,24 @@ object Option{
   //map으로 전체 리스트를 한번 훑고, sequence로 다시 훑기때문에 반복이 2번!
 
   //traverse를 만들어서 리스트를 한번만 훑게 변경.
-  def traverse[A,B](a: List[A])(f: A=> Option[B]): Option[List[B]] = ???
+  def traverse[A,B](a: List[A])(f: A=> Option[B]): Option[List[B]] = a match {
+    case Nil => Some(Nil)
+    case h::t => f(h).flatMap(hh => traverse(t)(f).map(hh::_))
+  }
+
+  def traverse_1[A,B](a: List[A])(f: A => Option[B]): Option[List[B]] = a match {
+    case Nil => Some(Nil)
+    case h::t => map2(f(h),traverse(t)(f))((x,y)=>(x::y))
+  }
+
+  def traverse_2[A,B](a: List[A])(f: A => Option[B]): Option[List[B]] =
+    a.foldRight[Option[List[B]]](Some(Nil))((h,t)=> map2(f(h),t)((_::_)))
+
+  def sequenceViaTraverse[A](a: List[Option[A]]): Option[List[A]] =
+  //traverse(a)(x=>x)
+    traverse(a)(identity)
+  //Option[A] => Option[A] 그대로.
+
 
   def lift[A,B](f:A=>B): Option[A] => Option[B] = a=>a.map(f)
 

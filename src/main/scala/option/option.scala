@@ -15,7 +15,6 @@ sealed trait Option[+A] {
     case None => None
   }
 
-
   def flatMap1[B](f: A => Option[B]): Option[B] =
     map(a => f(a)).getOrElse(None)
 
@@ -52,7 +51,7 @@ sealed trait Option[+A] {
   def orElse4[B >: A](ob: => Option[B]): Option[B] =
     flatMap(a => Option(Option(a))).getOrElse(ob)
 
-  //option of option of option으로 만든 뒤
+  //option of option으로 만든 뒤 값을 꺼냄.
 
   def filter(f: A => Boolean): Option[A] = this match {
     case Some(a) if (f(a)) => this
@@ -61,9 +60,6 @@ sealed trait Option[+A] {
 
   def filter1(f: A => Boolean): Option[A] =
     flatMap(a => if (f(a)) this else None)
-
-
-
 
 }
 
@@ -83,6 +79,13 @@ object Option{
   //V(X) = E((X-E(X))^2), E(X)를 구한 뒤 => E((X-E(X)^2)를 구함. flatMap을 통해 순차적인 연산 가능.
   //순차적인 연산 중간에 None이 발생하면 나머지 모든 과정이 취소!
 
+
+  def lift[A,B](f:A=>B): Option[A] => Option[B] = a=>a.map(f)
+
+  def lift2[A,B](f:A=>B): Option[A] => Option[B] = _ map f
+  //일반 함수들을 옵션에 대해 작용하는 함수로 승급시킬 수 있음.
+  //옵션을 다룰 때 기존 함수들을 옵션에 대해 작동하도록 새로 작성하지않고,
+  //그대로 사용 가능하게 해줌.
 
   //exercise 4.3
   def map2[A,B,C](fa: Option[A], fb: Option[B])(f: (A,B) => C): Option[C] =
@@ -162,13 +165,6 @@ object Option{
     traverse(a)(identity)
   //Option[A] => Option[A] 그대로.
 
-
-  def lift[A,B](f:A=>B): Option[A] => Option[B] = a=>a.map(f)
-
-  def lift2[A,B](f:A=>B): Option[A] => Option[B] = _ map f
-  //일반 함수들을 옵션에 대해 작용하는 함수로 승급시킬 수 있음.
-  //옵션을 다룰 때 기존 함수들을 옵션에 대해 작동하도록 새로 작성하지않고,
-  //그대로 사용 가능하게 해줌.
 
   //map, lift, sequence, traverse, map2, map3가 있다면 Option을 다룰 때 기존 함수를 수정없이 그대로 사용할 수 있음.
 }

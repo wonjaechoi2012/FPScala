@@ -61,6 +61,7 @@ sealed trait Option[+A] {
   def filter1(f: A => Boolean): Option[A] =
     flatMap(a => if (f(a)) this else None)
 
+  def pure[A](a: A): Option[A] = Some(a)
 }
 
 
@@ -159,6 +160,10 @@ object Option{
 
   def traverse_2[A,B](a: List[A])(f: A => Option[B]): Option[List[B]] =
     a.foldRight[Option[List[B]]](Some(Nil))((h,t)=> map2(f(h),t)((_::_)))
+
+  def traverse_3[A,B](a: List[A])(f: A => Option[B]): Option[List[B]] =
+    a.foldRight(apply(List.empty[B]))((h,t)=> map2(f(h),t)((_::_)))
+  //acc는 Some(List.empty[B])
 
   def sequenceViaTraverse[A](a: List[Option[A]]): Option[List[A]] =
   //traverse(a)(x=>x)

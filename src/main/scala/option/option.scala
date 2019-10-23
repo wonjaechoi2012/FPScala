@@ -141,6 +141,9 @@ object Option{
     a.foldRight[Option[List[A]]](Some(Nil))((x,y)=>map2(x,y)((x,y)=>(x::y)))
   //패턴매칭을 foldRight로 변경
 
+  def sequence_3[A](a: List[Option[A]]): Option[List[A]] =
+    a.foldRight(apply(List.empty[A]))((x,y)=>map2(x,y)((x,y)=>(x::y)))
+
 
   def parseInts(a: List[String]): Option[List[Int]] =
     sequence(a.map(i=>Try(i.toInt)))
